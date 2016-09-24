@@ -2,7 +2,7 @@
 
 [<RequireQualifiedAccess>]
 module Dealer =
-    type Card = 
+    type CardNumber = 
         | Two
         | Three
         | Four
@@ -16,12 +16,31 @@ module Dealer =
         | Q
         | K
         | A
-    type Suit = Suit of Card list
+
+    type Suit = 
+        | Diamond
+        | Club
+        | Heart
+        | Spade
+
+    type Card = Suit * CardNumber
     type Pile = Pile of Card list
-    type Set = { Piles: Pile list }
+    type Foundation = Suit * Pile
+
+    type Game = { 
+        Tableau: Pile list; 
+        Stock: Pile;
+        Discard: Pile;
+        Foundations: Foundation list 
+    }
 
     let deal () = 
-        { Piles = List.init 7 (fun i -> Pile [] ) }
+        {
+            Tableau = List.init 7 (fun i -> Pile [] );
+            Stock = Pile [];
+            Discard = Pile [];
+            Foundations = []
+        }
 
 module DealerTests =
     open Xunit
@@ -29,5 +48,5 @@ module DealerTests =
     [<Fact>]
     let ``Each set should have 7 piles``() =
         let set = Dealer.deal()
-        Assert.Equal(set.Piles|>List.length, 7)
+        Assert.Equal(set.Tableau|>List.length, 7)
 
