@@ -29,13 +29,12 @@ module Game =
         | Spade
 
     type Card = Suit * CardNumber
-    type Pile = Pile of Card list
-    type Foundation = Suit * Pile
+    type Foundation = Suit * Card list
 
     type Set = { 
-        Tableau: Pile list; 
-        Stock: Pile;
-        Discard: Pile;
+        Tableau: Card list list; 
+        Stock: Card list;
+        Discard: Card list;
         Foundations: Foundation list 
     }
 
@@ -67,7 +66,7 @@ module Game =
         let folder carry count =
             let (piles, rest) = carry
             let (take, leave) = List.splitAt count rest
-            (Pile take) :: piles, leave
+            take :: piles, leave
 
         let (tableau, undealt) =
             [ 7 .. -1 .. 1 ]
@@ -75,8 +74,8 @@ module Game =
 
         {
             Tableau = tableau;
-            Stock = Pile undealt;
-            Discard = Pile [];
+            Stock = undealt;
+            Discard = [];
             Foundations = []
         }
 
@@ -93,8 +92,7 @@ module DealerTests =
     let ``First pile has 1 card, 2nd 2 cards and so on`` () =
         let set = deal()
         let assertItemAt idx = 
-            let pile = set.Tableau |>List.item (idx - 1)
-            let (Pile cards) = pile
+            let cards = set.Tableau |>List.item (idx - 1)
             Assert.Equal(idx, cards |> List.length)
         [ 1 .. 7 ]
         |> List.iter assertItemAt
