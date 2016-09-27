@@ -29,14 +29,22 @@ module Game =
         | Spade
 
     type Card = Card of Suit * CardNumber
-    type Foundation = Suit * Card list
+    type Foundations = {
+        Diamond: Card list;
+        Club: Card list;
+        Heart: Card list;
+        Spade: Card list;
+    }
+        
 
     type Set = { 
         Tableau: Card list list; 
         Stock: Card list;
         Discard: Card list;
-        Foundations: Foundation list 
+        Foundations: Foundations
     }
+
+    let getFoundationCards suit set =
 
     let getAllCards () =
         let allSuits = allUnionCases<Suit>()
@@ -76,7 +84,7 @@ module Game =
             Tableau = tableau;
             Stock = undealt;
             Discard = [];
-            Foundations = []
+            Foundations = { Diamond = []; Club = []; Heart = []; Spade = [] }
         }
 
     let transfer set = 
@@ -141,3 +149,18 @@ module DealerTests =
 
         Assert.Equal<Card list>(next.Stock, stock |> List.tail)
         Assert.Equal<Card list>(next.Discard, (List.head stock) :: discard)
+
+    [<Fact>]
+    let ``Move to foundation, if foundation is empty then only Ace is allowed`` () =
+        let next = 
+            {
+                Tableau = [];
+                Stock = [];
+                Discard = [];
+                Foundations = []
+            }
+            |> addToFoundation Spade (Card Spade, Ace)
+
+        let actual = next.Foundations.Spade |> List.head
+
+        Assert.Equal<Card>((Card Spade, Ace), actual)
