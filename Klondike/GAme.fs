@@ -28,7 +28,7 @@ module Game =
         | Heart
         | Spade
 
-    type Card = Suit * CardNumber
+    type Card = Card of Suit * CardNumber
     type Foundation = Suit * Card list
 
     type Set = { 
@@ -44,7 +44,7 @@ module Game =
         seq {
             for s in allSuits do
             for n in allNumbers do
-            yield s, n
+            yield Card (s, n)
         }
 
     let permute list =
@@ -79,6 +79,18 @@ module Game =
             Foundations = []
         }
 
+    let transfer set = 
+        let nextStock = if set.Stock = [] then set.Discard else set.Stock
+        let nextDiscard = if set.Stock = [] then [] else set.Discard
+        { set with Discard = nextDiscard; Stock = nextStock }
+
+    let pickFromStock set =
+        { 
+            set with 
+                Discard = (List.head set.Stock)::set.Discard;
+                Stock = (List.tail set.Stock) 
+        }
+
 module DealerTests =
     open Xunit
     open Game
@@ -96,3 +108,36 @@ module DealerTests =
             Assert.Equal(idx, cards |> List.length)
         [ 1 .. 7 ]
         |> List.iter assertItemAt
+
+    [<Fact>]
+    let ``If the Stock becomes empty, turn the entire discard pile over and make it the new Stock.`` () =
+        let stock = getAllCards() |> List.ofSeq |> List.take 5
+        let next = 
+            {
+                Tableau = [];
+                Stock = [];
+                Discard = stock;
+                Foundations = []
+            }
+            |> transfer
+
+        Assert.Equal<Card list>(next.Stock, stock)
+
+    [<Fact>]
+    let ``Turn over the top card of the Stock and place it face-up on the Discard pile`` () =
+        let (stock, discard) = 
+            getAllCards() 
+            |> List.ofSeq 
+            |> List.take 10
+            |> List.splitAt 5
+        let next = 
+            {
+                Tableau = [];
+                Stock = stock;
+                Discard = discard;
+                Foundations = []
+            }
+            |> pickFromStock
+
+        Assert.Equal<Card list>(next.Stock, stock |> List.tail)
+        Assert.Equal<Card list>(next.Discard, (List.head stock) :: discard)
