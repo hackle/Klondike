@@ -5,7 +5,7 @@ module Game =
 
     let allUnionCases<'a>() = 
         FSharpType.GetUnionCases typeof<'a>
-        |> Array.map (fun u -> FSharpValue.MakeUnion u,[||] :?> 'a)
+        |> Array.map (fun u -> FSharpValue.MakeUnion(u, [||]) :?> 'a)
 
     type CardNumber = 
         | Two
@@ -40,18 +40,42 @@ module Game =
     }
 
     let getAllCards () =
-        let allSuits = FSharpType.GetUnionCases typeof<Suit>
-        let allNumbers = FSharpType.GetUnionCases typeof<CardNumber>
+        let allSuits = allUnionCases<Suit>()
+        let allNumbers = allUnionCases<CardNumber>()
         seq {
             for s in allSuits do
             for n in allNumbers do
-            yield FSharpType, n
-        }        
+            yield s, n
+        }
+
+    let permute list =
+        let rand = new System.Random()
+        let rec permute' remaining result =
+            match remaining with
+            | [] -> result
+            | _ ->
+                let index = rand.Next(0, (List.length remaining))
+                let item = remaining |> List.item index
+                permute' (remaining |> List.except [ item ]) (item::result)
+        permute' list []
+        
+    let takeFromList count list = 
+        List.splitAt count
 
     let deal () = 
+        let allCards = getAllCards() |> List.ofSeq |> permute
+        let folder carry count =
+            let (piles, rest) = carry
+            let (take, leave) = List.splitAt count rest
+            (Pile take) :: piles, leave
+
+        let (tableau, undealt) =
+            [ 7 .. -1 .. 1 ]
+            |> List.fold folder ([], allCards)
+
         {
-            Tableau = List.init 7 (fun i -> Pile [] );
-            Stock = Pile [];
+            Tableau = tableau;
+            Stock = Pile undealt;
             Discard = Pile [];
             Foundations = []
         }
