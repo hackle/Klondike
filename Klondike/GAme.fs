@@ -7,7 +7,8 @@ module Game =
         FSharpType.GetUnionCases typeof<'a>
         |> Array.map (fun u -> FSharpValue.MakeUnion(u, [||]) :?> 'a)
 
-    type CardNumber = 
+    type CardNumber =     
+        | Ace
         | Two
         | Three
         | Four
@@ -17,10 +18,9 @@ module Game =
         | Eight
         | Nine
         | Ten
-        | J
-        | Q
-        | K
-        | A
+        | Jack
+        | Queen
+        | King
 
     type Suit = 
         | Diamond
