@@ -7,20 +7,20 @@ module Game =
         FSharpType.GetUnionCases typeof<'a>
         |> Array.map (fun u -> FSharpValue.MakeUnion(u, [||]) :?> 'a)
 
-    type CardNumber =     
-        | Ace
-        | Two
-        | Three
-        | Four
-        | Five
-        | Six
-        | Seven
-        | Eight
-        | Nine
-        | Ten
-        | Jack
-        | Queen
-        | King
+    type Face =
+        | Two = 2
+        | Three = 3
+        | Four = 4
+        | Five = 5
+        | Six = 6
+        | Seven = 7
+        | Eight = 8
+        | Nine = 9
+        | Ten = 10
+        | Jack = 11
+        | Queen = 12
+        | King = 13
+        | Ace = 14
 
     type Suit = 
         | Diamond
@@ -28,13 +28,24 @@ module Game =
         | Heart
         | Spade
 
-    type Card = { Suit: Suit; Face: CardNumber }
+    type Card = { Suit: Suit; Face: Face }
 
     type Foundation = { Suit: Suit; Cards: Card list } with
         member this.Add (card: Card) = 
-            if card.Suit = this.Suit then 
-                { this with Cards = card :: this.Cards }
-            else this
+            let isAceOverEmpty () =
+                this.Cards = [] && card.Face = Face.Ace
+            let isDecrementBy1 () = 
+                match this.Cards with
+                | [] -> false
+                | h::_ -> (int card.Face) + 1 = int h.Face
+
+            let canAdd = 
+                card.Suit = this.Suit &&
+                ( isAceOverEmpty() || isDecrementBy1() )
+
+            match canAdd with
+            | true -> { this with Cards = card :: this.Cards }
+            | false -> this
             
     type Foundations = 
         {
@@ -63,14 +74,19 @@ module Game =
         Stock: Card list;
         Discard: Card list;
         Foundations: Foundations
-    }
+    } with
+        member this.addToFoundation card = 
+            { this with Foundations = this.Foundations.Add card }
 
     let getAllCards () =
         let allSuits = allUnionCases<Suit>()
-        let allNumbers = allUnionCases<CardNumber>()
+        let allFaces =
+            [ (int Face.Two) .. (int Face.Ace) ]
+            |> List.map (fun i -> enum i)
+
         seq {
             for s in allSuits do
-            for n in allNumbers do
+            for n in allFaces do
             yield { Suit = s; Face = n }
         }
 
@@ -171,30 +187,30 @@ module DealerTests =
 
     [<Fact>]
     let ``Move to foundation, if foundation is empty then only Ace is allowed`` () =
+        let card = { Suit = Spade; Face = Face.Ace }
         let next = 
             {
                 Tableau = [];
                 Stock = [];
                 Discard = [];
                 Foundations = Foundations.New()
-            }
-            |> addToFoundation (Card (Spade, Ace))
+            }.addToFoundation card
 
-        let actual = next.Foundations.Spade |> List.head
+        let actual = next.Foundations.Spade.Cards |> List.head
 
-        Assert.Equal<Card>((Card (Spade, Ace)), actual)
+        Assert.Equal<Card>(card, actual)
 
     [<Fact>]
-    let ``Move to foundation, if foundation is empty then none-Ace is not allowed`` () =
+    let ``Move to foundation, if foundation is empty then none-Ace is not allowed`` () =    
+        let card = { Suit = Spade; Face = Face.Two }
         let next = 
             {
                 Tableau = [];
                 Stock = [];
                 Discard = [];
-                Foundations = { Diamond = []; Club = []; Spade = []; Heart = [] }
-            }
-            |> addToFoundation (Card (Spade, Two))
+                Foundations = Foundations.New()
+            }.addToFoundation card
 
-        let actual = next.Foundations.Spade
+        let actual = next.Foundations.Spade.Cards
 
         Assert.Equal<Card>([], actual)
