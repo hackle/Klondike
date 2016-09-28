@@ -28,14 +28,35 @@ module Game =
         | Heart
         | Spade
 
-    type Card = Card of Suit * CardNumber
-    type Foundations = {
-        Diamond: Card list;
-        Club: Card list;
-        Heart: Card list;
-        Spade: Card list;
-    }
-        
+    type Card = { Suit: Suit; Face: CardNumber }
+
+    type Foundation = { Suit: Suit; Cards: Card list } with
+        member this.Add (card: Card) = 
+            if card.Suit = this.Suit then 
+                { this with Cards = card :: this.Cards }
+            else this
+            
+    type Foundations = 
+        {
+            Diamond: Foundation;
+            Club: Foundation;
+            Heart: Foundation;
+            Spade: Foundation;
+        } with
+        static member New () = 
+            { 
+                Diamond = { Suit = Diamond; Cards = [] };
+                Club = { Suit = Club; Cards = [] };
+                Heart = { Suit = Heart; Cards = [] };
+                Spade = { Suit = Spade; Cards = [] }
+            }
+
+        member this.Add (card: Card) =
+            match card.Suit with
+            | Diamond -> { this with Diamond = card |> this.Diamond.Add }
+            | Club -> { this with Club = card |> this.Club.Add }
+            | Heart -> { this with Heart = card |> this.Heart.Add }
+            | Spade -> { this with Spade = card |> this.Spade.Add }
 
     type Set = { 
         Tableau: Card list list; 
@@ -44,15 +65,13 @@ module Game =
         Foundations: Foundations
     }
 
-    let getFoundationCards suit set =
-
     let getAllCards () =
         let allSuits = allUnionCases<Suit>()
         let allNumbers = allUnionCases<CardNumber>()
         seq {
             for s in allSuits do
             for n in allNumbers do
-            yield Card (s, n)
+            yield { Suit = s; Face = n }
         }
 
     let permute list =
@@ -84,7 +103,7 @@ module Game =
             Tableau = tableau;
             Stock = undealt;
             Discard = [];
-            Foundations = { Diamond = []; Club = []; Heart = []; Spade = [] }
+            Foundations = Foundations.New()
         }
 
     let transfer set = 
@@ -125,7 +144,7 @@ module DealerTests =
                 Tableau = [];
                 Stock = [];
                 Discard = stock;
-                Foundations = []
+                Foundations = Foundations.New()
             }
             |> transfer
 
@@ -143,7 +162,7 @@ module DealerTests =
                 Tableau = [];
                 Stock = stock;
                 Discard = discard;
-                Foundations = []
+                Foundations = Foundations.New()
             }
             |> pickFromStock
 
@@ -157,10 +176,25 @@ module DealerTests =
                 Tableau = [];
                 Stock = [];
                 Discard = [];
-                Foundations = []
+                Foundations = Foundations.New()
             }
-            |> addToFoundation Spade (Card Spade, Ace)
+            |> addToFoundation (Card (Spade, Ace))
 
         let actual = next.Foundations.Spade |> List.head
 
-        Assert.Equal<Card>((Card Spade, Ace), actual)
+        Assert.Equal<Card>((Card (Spade, Ace)), actual)
+
+    [<Fact>]
+    let ``Move to foundation, if foundation is empty then none-Ace is not allowed`` () =
+        let next = 
+            {
+                Tableau = [];
+                Stock = [];
+                Discard = [];
+                Foundations = { Diamond = []; Club = []; Spade = []; Heart = [] }
+            }
+            |> addToFoundation (Card (Spade, Two))
+
+        let actual = next.Foundations.Spade
+
+        Assert.Equal<Card>([], actual)
