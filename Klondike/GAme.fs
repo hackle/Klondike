@@ -214,3 +214,19 @@ module DealerTests =
         let actual = next.Foundations.Spade.Cards
 
         Assert.Equal<Card>([], actual)
+        
+    [<Fact>]
+    let ``Move to foundation, if foundation is not empty then must only decrement`` () =    
+        let ace = { Suit = Spade; Face = Face.Ace }
+        let king = { Suit = Spade; Face = Face.King }
+        let next = 
+            {
+                Tableau = [];
+                Stock = [];
+                Discard = [];
+                Foundations = Foundations.New().Add ace
+            }.addToFoundation king
+
+        let actual = next.Foundations.Spade.Cards.Head
+
+        Assert.Equal<Card>(king, actual)
