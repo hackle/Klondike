@@ -1,7 +1,8 @@
 ﻿module PlayTests
 open Xunit
 open Klondike
-open Klondike.Game
+open Klondike.Components
+open Klondike.GameOps
 
 [<Fact>]
 let ``Each set should have 7 piles``() =
@@ -12,14 +13,14 @@ let ``Each set should have 7 piles``() =
 let ``First pile has 1 card, 2nd 2 cards and so on`` () =
     let set = Play.deal()
     let assertItemAt idx = 
-        let cards = set.Tableau |>List.item (idx - 1)
-        Assert.Equal(idx, cards |> List.length)
+        let pile = set.Tableau |>List.item (idx - 1)
+        Assert.Equal(idx, pile.Value |> List.length)
     [ 1 .. 7 ]
     |> List.iter assertItemAt
 
 [<Fact>]
 let ``If the Stock becomes empty, turn the entire discard pile over and make it the new Stock.`` () =
-    let stock = Game.AllCards |> List.ofSeq |> List.take 5
+    let stock = Card.AllCards |> List.ofSeq |> List.take 5
     let next = 
         {
             Tableau = [];
@@ -34,7 +35,7 @@ let ``If the Stock becomes empty, turn the entire discard pile over and make it 
 [<Fact>]
 let ``Turn over the top card of the Stock and place it face-up on the Discard pile`` () =
     let (stock, discard) = 
-        Game.AllCards
+        Card.AllCards
         |> List.ofSeq 
         |> List.take 10
         |> List.splitAt 5
@@ -102,7 +103,7 @@ let ``Move to foundation, can increment by one`` () =
     Assert.Equal<Card>(two, actual)
 
 [<Fact>]
-let ``Move to foundation, cannot decrement by more than one`` () =    
+let ``Move to foundation, cannot increment by more than one`` () =    
     let ace = { Suit = Spade; Face = Face.Ace }
     let three = { Suit = Spade; Face = Face.Three }
     let next = 

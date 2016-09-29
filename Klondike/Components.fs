@@ -1,6 +1,6 @@
 ﻿namespace Klondike
 
-module Game =
+module Components =
     open ListExtensions
     
     type Face =
@@ -24,14 +24,13 @@ module Game =
         | Heart
         | Spade
 
-    type Card = { Suit: Suit; Face: Face }
-
-    let AllCards =
-        seq {
-            for s in UnionCaseHelper.allUnionCases<Suit>() do
-            for n in EnumHelper.allValues<Face>() do
-            yield { Suit = s; Face = n }
-        }
+    type Card = { Suit: Suit; Face: Face } with
+        static member AllCards =
+            seq {
+                for s in UnionCaseHelper.allUnionCases<Suit>() do
+                for n in EnumHelper.allValues<Face>() do
+                yield { Suit = s; Face = n }
+            }
 
     type Foundation = 
         { 
