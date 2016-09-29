@@ -1,17 +1,17 @@
 ﻿namespace Klondike
 
-module GameTests =
+module PlayTests =
     open Xunit
     open Game
 
     [<Fact>]
     let ``Each set should have 7 piles``() =
-        let set = deal()
+        let set = Play.deal()
         Assert.Equal(set.Tableau|>List.length, 7)
 
     [<Fact>]
     let ``First pile has 1 card, 2nd 2 cards and so on`` () =
-        let set = deal()
+        let set = Play.deal()
         let assertItemAt idx = 
             let cards = set.Tableau |>List.item (idx - 1)
             Assert.Equal(idx, cards |> List.length)
@@ -20,7 +20,7 @@ module GameTests =
 
     [<Fact>]
     let ``If the Stock becomes empty, turn the entire discard pile over and make it the new Stock.`` () =
-        let stock = getAllCards() |> List.ofSeq |> List.take 5
+        let stock = Game.AllCards |> List.ofSeq |> List.take 5
         let next = 
             {
                 Tableau = [];
@@ -28,14 +28,14 @@ module GameTests =
                 Discard = stock;
                 Foundations = Foundations.New()
             }
-            |> transfer
+            |> Play.update
 
         Assert.Equal<Card list>(next.Stock, stock)
 
     [<Fact>]
     let ``Turn over the top card of the Stock and place it face-up on the Discard pile`` () =
         let (stock, discard) = 
-            getAllCards() 
+            Game.AllCards
             |> List.ofSeq 
             |> List.take 10
             |> List.splitAt 5
@@ -46,7 +46,7 @@ module GameTests =
                 Discard = discard;
                 Foundations = Foundations.New()
             }
-            |> pickFromStock
+            |> Play.pickFromStock
 
         Assert.Equal<Card list>(next.Stock, stock |> List.tail)
         Assert.Equal<Card list>(next.Discard, (List.head stock) :: discard)
@@ -60,7 +60,8 @@ module GameTests =
                 Stock = [];
                 Discard = [];
                 Foundations = Foundations.New()
-            }.addToFoundation card
+            } 
+            |> Play.addToFoundation card
 
         let actual = next.Foundations.Spade.Cards |> List.head
 
@@ -75,14 +76,15 @@ module GameTests =
                 Stock = [];
                 Discard = [];
                 Foundations = Foundations.New()
-            }.addToFoundation card
+            }
+            |> Play.addToFoundation card
 
         let actual = next.Foundations.Spade.Cards
 
         Assert.Equal<Card>([], actual)
         
     [<Fact>]
-    let ``Move to foundation, if foundation is not empty then can decrement by one`` () =    
+    let ``Move to foundation, can decrement by one`` () =    
         let ace = { Suit = Spade; Face = Face.Ace }
         let king = { Suit = Spade; Face = Face.King }
         let next = 
@@ -90,15 +92,16 @@ module GameTests =
                 Tableau = [];
                 Stock = [];
                 Discard = [];
-                Foundations = Foundations.New().Add ace
-            }.addToFoundation king
+                Foundations = Foundations.New() |> Foundations.add ace
+            }
+            |> Play.addToFoundation king
 
         let actual = next.Foundations.Spade.Cards.Head
 
         Assert.Equal<Card>(king, actual)
 
     [<Fact>]
-    let ``Move to foundation, if foundation is not empty then cannot decrement by more than one`` () =    
+    let ``Move to foundation, cannot decrement by more than one`` () =    
         let ace = { Suit = Spade; Face = Face.Ace }
         let queen = { Suit = Spade; Face = Face.Queen }
         let next = 
@@ -106,8 +109,9 @@ module GameTests =
                 Tableau = [];
                 Stock = [];
                 Discard = [];
-                Foundations = Foundations.New().Add ace
-            }.addToFoundation queen
+                Foundations = Foundations.New() |> Foundations.add queen
+            }
+            |> Play.addToFoundation queen
 
         let actual = next.Foundations.Spade.Cards.Head
 

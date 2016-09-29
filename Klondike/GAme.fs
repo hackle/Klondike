@@ -1,12 +1,8 @@
 ﻿namespace Klondike
 
 module Game =
-    open Microsoft.FSharp.Reflection
-
-    let allUnionCases<'a>() = 
-        FSharpType.GetUnionCases typeof<'a>
-        |> Array.map (fun u -> FSharpValue.MakeUnion(u, [||]) :?> 'a)
-
+    open ListExtensions
+    
     type Face =
         | Two = 2
         | Three = 3
@@ -30,22 +26,38 @@ module Game =
 
     type Card = { Suit: Suit; Face: Face }
 
-    type Foundation = { Suit: Suit; Cards: Card list } with
-        member this.Add (card: Card) = 
+    let AllCards =
+        let allSuits = UnionCaseHelper.AllUnionCases<Suit>()
+        let allFaces =
+            [ (int Face.Two) .. (int Face.Ace) ]
+            |> List.map (fun i -> enum i)
+
+        seq {
+            for s in allSuits do
+            for n in allFaces do
+            yield { Suit = s; Face = n }
+        }
+
+    type Foundation = 
+        { 
+            Suit: Suit; 
+            Cards: Card list 
+        } with
+        static member add (card: Card) foundation = 
             let isAceOverEmpty () =
-                this.Cards = [] && card.Face = Face.Ace
+                foundation.Cards = [] && card.Face = Face.Ace
             let isDecrementBy1 () = 
-                match this.Cards with
+                match foundation.Cards with
                 | [] -> false
                 | h::_ -> (int card.Face) + 1 = int h.Face
 
             let canAdd = 
-                card.Suit = this.Suit &&
+                card.Suit = foundation.Suit &&
                 ( isAceOverEmpty() || isDecrementBy1() )
 
             match canAdd with
-            | true -> { this with Cards = card :: this.Cards }
-            | false -> this
+            | true -> { foundation with Cards = card :: foundation.Cards }
+            | false -> foundation
             
     type Foundations = 
         {
@@ -62,74 +74,17 @@ module Game =
                 Spade = { Suit = Spade; Cards = [] }
             }
 
-        member this.Add (card: Card) =
+        static member add (card: Card) foundations =
             match card.Suit with
-            | Diamond -> { this with Diamond = card |> this.Diamond.Add }
-            | Club -> { this with Club = card |> this.Club.Add }
-            | Heart -> { this with Heart = card |> this.Heart.Add }
-            | Spade -> { this with Spade = card |> this.Spade.Add }
+            | Diamond -> { foundations with Diamond = Foundation.add card foundations.Diamond }
+            | Club -> { foundations with Club = Foundation.add card foundations.Club }
+            | Heart -> { foundations with Heart = Foundation.add card foundations.Heart }
+            | Spade -> { foundations with Spade = Foundation.add card foundations.Spade }
+
 
     type Set = { 
         Tableau: Card list list; 
         Stock: Card list;
         Discard: Card list;
         Foundations: Foundations
-    } with
-        member this.addToFoundation card = 
-            { this with Foundations = this.Foundations.Add card }
-
-    let getAllCards () =
-        let allSuits = allUnionCases<Suit>()
-        let allFaces =
-            [ (int Face.Two) .. (int Face.Ace) ]
-            |> List.map (fun i -> enum i)
-
-        seq {
-            for s in allSuits do
-            for n in allFaces do
-            yield { Suit = s; Face = n }
-        }
-
-    let permute list =
-        let rand = new System.Random()
-        let rec permute' remaining result =
-            match remaining with
-            | [] -> result
-            | _ ->
-                let index = rand.Next(0, (List.length remaining))
-                let item = remaining |> List.item index
-                permute' (remaining |> List.except [ item ]) (item::result)
-        permute' list []
-        
-    let takeFromList count list = 
-        List.splitAt count
-
-    let deal () = 
-        let allCards = getAllCards() |> List.ofSeq |> permute
-        let folder carry count =
-            let (piles, rest) = carry
-            let (take, leave) = List.splitAt count rest
-            take :: piles, leave
-
-        let (tableau, undealt) =
-            [ 7 .. -1 .. 1 ]
-            |> List.fold folder ([], allCards)
-
-        {
-            Tableau = tableau;
-            Stock = undealt;
-            Discard = [];
-            Foundations = Foundations.New()
-        }
-
-    let transfer set = 
-        let nextStock = if set.Stock = [] then set.Discard else set.Stock
-        let nextDiscard = if set.Stock = [] then [] else set.Discard
-        { set with Discard = nextDiscard; Stock = nextStock }
-
-    let pickFromStock set =
-        { 
-            set with 
-                Discard = (List.head set.Stock)::set.Discard;
-                Stock = (List.tail set.Stock) 
-        }
+    }
