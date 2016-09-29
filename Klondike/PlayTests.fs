@@ -58,7 +58,7 @@ let ``Move to foundation, if foundation is empty then only Ace is allowed`` () =
             Tableau = [];
             Stock = [];
             Discard = [];
-            Foundations = Foundations.New()
+            Foundations = Foundations.New() |> Foundations.add card
         } 
         |> Play.addToFoundation card
 
@@ -83,26 +83,9 @@ let ``Move to foundation, if foundation is empty then none-Ace is not allowed`` 
     Assert.Equal<Card>([], actual)
         
 [<Fact>]
-let ``Move to foundation, can decrement by one`` () =    
+let ``Move to foundation, can increment by one`` () =    
     let ace = { Suit = Spade; Face = Face.Ace }
-    let king = { Suit = Spade; Face = Face.King }
-    let next = 
-        {
-            Tableau = [];
-            Stock = [];
-            Discard = [];
-            Foundations = Foundations.New() |> Foundations.add ace
-        }
-        |> Play.addToFoundation king
-
-    let actual = next.Foundations.Spade.Cards.Head
-
-    Assert.Equal<Card>(king, actual)
-
-[<Fact>]
-let ``Move to foundation, cannot decrement by more than one`` () =    
-    let ace = { Suit = Spade; Face = Face.Ace }
-    let queen = { Suit = Spade; Face = Face.Queen }
+    let two = { Suit = Spade; Face = Face.Two }
     let next = 
         {
             Tableau = [];
@@ -111,9 +94,27 @@ let ``Move to foundation, cannot decrement by more than one`` () =
             Foundations = 
                 Foundations.New() 
                 |> Foundations.add ace
-                |> Foundations.add queen
         }
-        |> Play.addToFoundation queen
+        |> Play.addToFoundation two
+
+    let actual = next.Foundations.Spade.Cards.Head
+
+    Assert.Equal<Card>(two, actual)
+
+[<Fact>]
+let ``Move to foundation, cannot decrement by more than one`` () =    
+    let ace = { Suit = Spade; Face = Face.Ace }
+    let three = { Suit = Spade; Face = Face.Three }
+    let next = 
+        {
+            Tableau = [];
+            Stock = [];
+            Discard = [];
+            Foundations = 
+                Foundations.New() 
+                |> Foundations.add ace
+        }
+        |> Play.addToFoundation three
 
     let actual = next.Foundations.Spade.Cards.Head
 

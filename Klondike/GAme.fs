@@ -39,16 +39,15 @@ module Game =
             Cards: Card list 
         } with
         static member add (card: Card) foundation = 
-            let isAceOverEmpty () =
-                foundation.Cards = [] && card.Face = Face.Ace
-            let isDecrementBy1 () = 
-                match foundation.Cards with
-                | [] -> false
-                | h::_ -> (int card.Face) + 1 = int h.Face
+            let currentMaxVal = 
+                if foundation.Cards.IsEmpty then 
+                    0 
+                else (int foundation.Cards.Head.Face)
+
+            let isIncrementBy1 = (int card.Face) = currentMaxVal + 1
 
             let canAdd = 
-                card.Suit = foundation.Suit &&
-                ( isAceOverEmpty() || isDecrementBy1() )
+                card.Suit = foundation.Suit && isIncrementBy1
 
             match canAdd with
             | true -> { foundation with Cards = card :: foundation.Cards }
@@ -75,7 +74,6 @@ module Game =
             | Club -> { foundations with Club = foundations.Club |> Foundation.add card }
             | Heart -> { foundations with Heart = foundations.Heart |> Foundation.add card }
             | Spade -> { foundations with Spade = foundations.Spade |> Foundation.add card }
-
 
     type Set = { 
         Tableau: Card list list; 
