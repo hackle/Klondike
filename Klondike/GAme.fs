@@ -76,10 +76,10 @@ module Game =
 
         static member add (card: Card) foundations =
             match card.Suit with
-            | Diamond -> { foundations with Diamond = Foundation.add card foundations.Diamond }
-            | Club -> { foundations with Club = Foundation.add card foundations.Club }
-            | Heart -> { foundations with Heart = Foundation.add card foundations.Heart }
-            | Spade -> { foundations with Spade = Foundation.add card foundations.Spade }
+            | Diamond -> { foundations with Diamond = foundations.Diamond |> Foundation.add card  }
+            | Club -> { foundations with Club = foundations.Club |> Foundation.add card }
+            | Heart -> { foundations with Heart = foundations.Heart |> Foundation.add card }
+            | Spade -> { foundations with Spade = foundations.Spade |> Foundation.add card }
 
 
     type Set = { 
