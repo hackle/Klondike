@@ -27,16 +27,9 @@ module Game =
     type Card = { Suit: Suit; Face: Face }
 
     let AllCards =
-        let allSuits = UnionCaseHelper.AllUnionCases<Suit>()
-        let allFaces = 
-            seq {
-                    for e in System.Enum.GetValues(typeof<Face>) do
-                    yield e :?> Face 
-            }
-
         seq {
-            for s in allSuits do
-            for n in allFaces do
+            for s in UnionCaseHelper.allUnionCases<Suit>() do
+            for n in EnumHelper.allValues<Face>() do
             yield { Suit = s; Face = n }
         }
 

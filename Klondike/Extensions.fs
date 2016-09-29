@@ -18,6 +18,11 @@ module UnionCaseHelper =
     
     open Microsoft.FSharp.Reflection
     
-    let AllUnionCases<'a>() = 
+    let allUnionCases<'a>() = 
         FSharpType.GetUnionCases typeof<'a>
         |> Array.map (fun u -> FSharpValue.MakeUnion(u, [||]) :?> 'a)
+
+[<RequireQualifiedAccess>]
+module EnumHelper =
+    let allValues<'a>()=
+        seq { for e in System.Enum.GetValues(typeof<'a>) do yield e :?> 'a }
