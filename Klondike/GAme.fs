@@ -4,6 +4,7 @@ module Game =
     open ListExtensions
     
     type Face =
+        | Ace = 1
         | Two = 2
         | Three = 3
         | Four = 4
@@ -16,7 +17,6 @@ module Game =
         | Jack = 11
         | Queen = 12
         | King = 13
-        | Ace = 14
 
     type Suit = 
         | Diamond
@@ -28,9 +28,11 @@ module Game =
 
     let AllCards =
         let allSuits = UnionCaseHelper.AllUnionCases<Suit>()
-        let allFaces =
-            [ (int Face.Two) .. (int Face.Ace) ]
-            |> List.map (fun i -> enum i)
+        let allFaces = 
+            seq {
+                    for e in System.Enum.GetValues(typeof<Face>) do
+                    yield e :?> Face 
+            }
 
         seq {
             for s in allSuits do
