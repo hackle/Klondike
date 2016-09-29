@@ -55,3 +55,21 @@ module GameOps =
             match canAdd with
             | false -> pile
             | true -> TableauPile (card::pile.Value)
+
+module Move =    
+    type Transfer<'s, 'f> = { From: 's; To: 'f }
+
+    let fromStockToDiscard set =
+        ()
+
+    let fromDiscardToFoundation set =
+        ()
+
+    let fromDiscardToTableau set =
+        ()
+
+    let fromTableauToFoundation pileIdx set =
+        ()
+
+    let fromTableauToTableau pileIdx1 pileIdx2 set =
+        ()

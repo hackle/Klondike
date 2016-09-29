@@ -6,10 +6,6 @@ module Play =
     open Components
     open GameOps
     open ListExtensions
-    
-    type Result<'s, 'f> =
-        | Success of 's
-        | Failure of 'f
 
     let deal () = 
         let allCardsShuffled = Card.AllCards |> List.ofSeq |> List.shuffle
