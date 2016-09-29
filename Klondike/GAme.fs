@@ -41,7 +41,10 @@ module Game =
         static member add (card: Card) foundation = 
             let currentMaxVal = 
                 if foundation.Cards.IsEmpty then 
-                    0 
+                    EnumHelper.allValues<Face>()
+                    |> Seq.min
+                    |> int
+
                 else (int foundation.Cards.Head.Face)
 
             let isIncrementBy1 = (int card.Face) = currentMaxVal + 1
@@ -75,8 +78,27 @@ module Game =
             | Heart -> { foundations with Heart = foundations.Heart |> Foundation.add card }
             | Spade -> { foundations with Spade = foundations.Spade |> Foundation.add card }
 
+    type TableauPile = TableauPile of Card list with
+        member this.Value = 
+            let (TableauPile cards) = this
+            cards
+
+        static member add (card: Card) (pile: TableauPile) =
+            let currentMaxValue = 
+                if pile.Value.IsEmpty then
+                    EnumHelper.allValues<Face>()
+                    |> Seq.max
+                    |> int
+                else pile.Value.Head.Face |> int
+
+            let canAdd = (int card.Face) = currentMaxValue - 1
+
+            match canAdd with
+            | false -> pile
+            | true -> TableauPile (card::pile.Value)
+
     type Set = { 
-        Tableau: Card list list; 
+        Tableau: TableauPile list; 
         Stock: Card list;
         Discard: Card list;
         Foundations: Foundations
