@@ -1,8 +1,9 @@
 ﻿namespace Klondike
 module Move =    
+    open ListExtensions
     open Components
     type Transfer<'s, 'f> = { From: 's; To: 'f }
-
+    
     let fromStockToDiscard set =
         let result =
             match set.Stock with
@@ -34,9 +35,7 @@ module Move =
                 let to' = set.Foundations |> Foundations.add x
                 let from' = 
                     if to' |> Foundations.has x 
-                        then set.Tableau 
-                            |> List.except [ pile ] 
-                            |> (fun r -> (TableauPile xs) :: r)
+                        then set.Tableau |> List.replace pile (TableauPile xs)
                         else set.Tableau
                 { From = from'; To = to' }
         { set with Tableau = transfer.From; Foundations = transfer.To }
