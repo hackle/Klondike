@@ -24,6 +24,8 @@ module Components =
         | Heart
         | Spade
 
+    type Color = | Red | Black
+
     type Card = { Suit: Suit; Face: Face } with
         static member AllCards =
             seq {
@@ -32,6 +34,11 @@ module Components =
                 yield { Suit = s; Face = n }
             }
             |> List.ofSeq
+
+        static member color card =
+            match card.Suit with
+            | Diamond | Heart -> Red
+            | _ -> Black
 
     type Foundation = 
         { 
@@ -94,15 +101,25 @@ module Components =
 
         static member add (card: Card) (pile: TableauPile) =
             let currentMaxValue = 
-                if pile.Value.IsEmpty then
+                if pile.Value.IsEmpty 
+                then
                     EnumHelper.allValues<Face>()
                     |> Seq.max
                     |> int
                     |> (+) 1
-
                 else pile.Value.Head.Face |> int
+            let faceValueIsDecrementBy1 = (int card.Face) = currentMaxValue - 1
 
-            let canAdd = (int card.Face) = currentMaxValue - 1
+            let nextColor =
+                if pile.Value.IsEmpty
+                then card |> Card.color
+                else 
+                    match pile.Value.Head |> Card.color with
+                    | Red -> Black
+                    | Black -> Red
+            let colorMatches = nextColor = (card |> Card.color)
+            
+            let canAdd = faceValueIsDecrementBy1 && colorMatches
 
             match canAdd with
             | false -> pile
