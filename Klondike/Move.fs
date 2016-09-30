@@ -41,7 +41,17 @@ module Move =
         { set with Tableau = transfer.From; Foundations = transfer.To }
 
     let fromDiscardToTableau set =
-        ()
+        let transfer =
+            match set.Discard with
+            | [] -> { From = set.Discard; To = set.Foundations }
+            | x::xs ->
+                let to' = set.Foundations |> Foundations.add x
+                let from' = 
+                    if set.Foundations |> Foundations.has x
+                        then xs
+                        else set.Discard
+                { From = from'; To = to' }
+        { set with Discard = transfer.From; Foundations = transfer.To }
 
     let fromTableauToTableau pileIdx1 pileIdx2 set =
         ()

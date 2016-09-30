@@ -118,3 +118,38 @@ let ``Move from tableau to foundation, transfers head if successful`` () =
 
     Assert.True(set.Tableau.[0].Value.IsEmpty)
     Assert.Equal<Card>(ace, set.Foundations.Spade.Cards.Head)
+
+[<Fact>]
+let ``Move from discard to tableau, remain unchanged if discard is empty`` () =
+    let ace = { Suit = Spade; Face = Face.Ace }
+    let pile = TableauPile [ ace ]
+    let original = 
+        {
+            Discard = []; 
+            Foundations = Foundations.New()
+            Stock = [];
+            Tableau = [ pile ] 
+        }
+    let result = 
+        original
+        |> Move.fromDiscardToTableau
+
+    Assert.Equal(original, result)
+
+//[<Fact>]
+//let ``Move from discard to tableau, remain unchanged if unsuccessful`` () =
+//    let ace = { Suit = Spade; Face = Face.Ace }
+//    let three = { Suit = 
+//    let pile = TableauPile [ ace ]
+//    let original = 
+//        {
+//            Discard = []; 
+//            Foundations = Foundations.New()
+//            Stock = [];
+//            Tableau = [ pile ] 
+//        }
+//    let result = 
+//        original
+//        |> Move.fromDiscardToTableau
+//
+//    Assert.Equal(original, result)  
