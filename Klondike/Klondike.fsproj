@@ -60,6 +60,7 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Extensions.fs" />
     <Compile Include="Components.fs" />
+    <Compile Include="ComponentTests.fs" />
     <Compile Include="Play.fs" />
     <Compile Include="PlayTests.fs" />
     <Compile Include="Move.fs" />
