@@ -107,7 +107,7 @@ module Components =
             match canAdd with
             | false -> pile
             | true -> TableauPile (card::pile.Value)
-
+            
     type Set = { 
         Tableau: TableauPile list;
         Stock: Card list;

@@ -68,3 +68,53 @@ let ``Move from discard to foundation, transfers head if successful`` () =
 
     Assert.Equal<Card list>(set.Discard, [])
     Assert.Equal<Card>(ace, set.Foundations.Spade.Cards.Head)
+
+// move from tableau to foundation
+[<Fact>]
+let ``Move from tableau to foundation, remains same if discard is empty`` () =
+    let ace = { Suit = Spade; Face = Face.Ace }
+    let pile = TableauPile [ ace ]
+    let set =
+        {
+            Discard = []; 
+            Foundations = Foundations.New()
+            Stock = [];
+            Tableau = [ pile ] 
+        }
+        |> Move.fromTableauToFoundation 0
+
+    Assert.Equal<Card list>(set.Discard, [])
+    Assert.Equal<Card>(ace, set.Foundations.Spade.Cards.Head)
+
+[<Fact>]
+let ``Move from tableau to foundation, remains same if unsuccessful`` () =
+    // this can't be added because a foundation must start with Ace
+    let disallowed = { Suit = Spade; Face = Face.Two }
+    let pile = TableauPile [ disallowed ]
+    let set =
+        {
+            Discard = []; 
+            Foundations = Foundations.New()
+            Stock = [];
+            Tableau = [ pile ] 
+        }
+        |> Move.fromTableauToFoundation 0
+
+    Assert.Equal<Card list>([ disallowed ], set.Tableau.[0].Value)
+    Assert.Equal<TableauPile>(pile, set.Tableau.[0])
+
+[<Fact>]
+let ``Move from tableau to foundation, transfers head if successful`` () =
+    let ace = { Suit = Spade; Face = Face.Ace }
+    let pile = TableauPile [ ace ]
+    let set =
+        {
+            Discard = []; 
+            Foundations = Foundations.New()
+            Stock = [];
+            Tableau = [ pile ] 
+        }
+        |> Move.fromTableauToFoundation 0
+
+    Assert.True(set.Tableau.[0].Value.IsEmpty)
+    Assert.Equal<Card>(ace, set.Foundations.Spade.Cards.Head)

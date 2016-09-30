@@ -25,10 +25,23 @@ module Move =
 
         { set with Discard = transfer.From; Foundations = transfer.To }
 
-    let fromDiscardToTableau set =
-        ()
-
     let fromTableauToFoundation pileIdx set =
+        let pile = set.Tableau.[ pileIdx ]
+        let transfer =
+            match pile.Value with
+            | [] -> { From = set.Tableau; To = set.Foundations }
+            | x::xs ->
+                let to' = set.Foundations |> Foundations.add x
+                let from' = 
+                    if to' |> Foundations.has x 
+                        then set.Tableau 
+                            |> List.except [ pile ] 
+                            |> (fun r -> (TableauPile xs) :: r)
+                        else set.Tableau
+                { From = from'; To = to' }
+        { set with Tableau = transfer.From; Foundations = transfer.To }
+
+    let fromDiscardToTableau set =
         ()
 
     let fromTableauToTableau pileIdx1 pileIdx2 set =
