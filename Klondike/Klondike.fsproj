@@ -63,7 +63,7 @@
     <Compile Include="Play.fs" />
     <Compile Include="PlayTests.fs" />
     <Compile Include="Move.fs" />
-    <Compile Include="GameOpsTests.fs" />
+    <Compile Include="MoveTests.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />

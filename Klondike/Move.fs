@@ -12,7 +12,18 @@ module Move =
         { set with Stock = result.From; Discard = result.To }
 
     let fromDiscardToFoundation set =
-        ()
+        let transfer =
+            match set.Discard with
+            | [] -> { From = set.Discard; To = set.Foundations }
+            | x::xs ->
+                let to' = set.Foundations |> Foundations.add x
+                let from' = 
+                    if to' |> Foundations.has x 
+                        then xs 
+                        else set.Discard
+
+                { From = from'; To = to' }
+        { set with Discard = transfer.From; Foundations = transfer.To }
 
     let fromDiscardToTableau set =
         ()

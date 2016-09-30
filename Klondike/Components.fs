@@ -72,6 +72,13 @@ module Components =
                 Spade = { Suit = Spade; Cards = [] }
             }
 
+        static member has (card: Card) foundations =
+            match card.Suit with
+            | Diamond -> foundations.Diamond.Cards |> List.contains card
+            | Club -> foundations.Club.Cards |> List.contains card
+            | Heart -> foundations.Heart.Cards |> List.contains card
+            | Spade -> foundations.Spade.Cards |> List.contains card
+
         static member add (card: Card) foundations =
             match card.Suit with
             | Diamond -> { foundations with Diamond = foundations.Diamond |> Foundation.add card  }

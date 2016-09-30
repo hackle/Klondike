@@ -4,12 +4,12 @@ open Klondike
 open Klondike.Components
 
 [<Fact>]
-let ``Each set should have 7 piles``() =
+let ``Deal, each set should have 7 piles``() =
     let set = Play.deal()
     Assert.Equal(set.Tableau|>List.length, 7)
 
 [<Fact>]
-let ``First pile has 1 card, 2nd 2 cards and so on`` () =
+let ``Deal, first pile has 1 card, 2nd 2 cards and so on`` () =
     let set = Play.deal()
     let assertItemAt idx = 
         let pile = set.Tableau |>List.item (idx - 1)
