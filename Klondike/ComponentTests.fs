@@ -66,6 +66,28 @@ let ``Add to tableau, if pile is empty then non-King is not allowed`` () =
         (TableauPile []) |> TableauPile.add card
         
     Assert.Equal<Card>(next.Value, [])
+    
+[<Fact>]
+let ``Add to tableau, can add if decrement face and alternate color`` () =
+    let blackKing = { Suit = Heart; Face = Face.King }
+    let redQueen = { Suit = Spade; Face = Face.Queen }
+    let next = 
+        (TableauPile []) 
+        |> TableauPile.add blackKing
+        |> TableauPile.add redQueen
+        
+    Assert.Equal<Card>(next.Value, [ redQueen; blackKing ])
+    
+[<Fact>]
+let ``Add to tableau, can not add if decrement face but with same color`` () =
+    let redKing = { Suit = Heart; Face = Face.King }
+    let redQueen = { Suit = Diamond; Face = Face.Queen }
+    let next = 
+        (TableauPile []) 
+        |> TableauPile.add redKing
+        |> TableauPile.add redQueen
+        
+    Assert.Equal<Card>(next.Value, [ redKing ])
 
 //[<Fact>]
 //let ``Add to tableau, if tableau is empty then none-Ace is not allowed`` () =    
