@@ -60,9 +60,10 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Extensions.fs" />
     <Compile Include="Components.fs" />
-    <Compile Include="GameOps.fs" />
     <Compile Include="Play.fs" />
     <Compile Include="PlayTests.fs" />
+    <Compile Include="Move.fs" />
+    <Compile Include="GameOpsTests.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />

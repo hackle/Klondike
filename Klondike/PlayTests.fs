@@ -2,7 +2,6 @@
 open Xunit
 open Klondike
 open Klondike.Components
-open Klondike.GameOps
 
 [<Fact>]
 let ``Each set should have 7 piles``() =

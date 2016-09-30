@@ -4,7 +4,6 @@
 module Play =
     
     open Components
-    open GameOps
     open ListExtensions
 
     let deal () = 
