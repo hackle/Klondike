@@ -4,7 +4,7 @@ open Xunit
 open Klondike.Components
 
 [<Fact>]
-let ``Add to foundations, if foundation is empty then only Ace is allowed`` () =
+let ``Add to tableaus, if foundation is empty then only Ace is allowed`` () =
     let card = { Suit = Spade; Face = Face.Ace }
     let next = Foundations.New() |> Foundations.add card
 
@@ -46,3 +46,58 @@ let ``Add to foundations, cannot increment by more than one`` () =
     let actual = next.Spade.Cards.Head
 
     Assert.Equal<Card>(ace, actual)
+
+// Add to tableau pile
+
+[<Fact>]
+let ``Add to tableau, if pile is empty then King is allowed`` () =
+    let card = { Suit = Spade; Face = Face.King }
+    let next = 
+        (TableauPile []) |> TableauPile.add card
+
+    let actual = next.Value |> List.head
+
+    Assert.Equal<Card>(card, actual)
+
+[<Fact>]
+let ``Add to tableau, if pile is empty then non-King is not allowed`` () =
+    let card = { Suit = Spade; Face = Face.Queen }
+    let next = 
+        (TableauPile []) |> TableauPile.add card
+        
+    Assert.Equal<Card>(next.Value, [])
+
+//[<Fact>]
+//let ``Add to tableau, if tableau is empty then none-Ace is not allowed`` () =    
+//    let card = { Suit = Spade; Face = Face.Two }
+//    let next = Tableau.New() |> Tableau.add card
+//
+//    let actual = next.Spade.Cards
+//
+//    Assert.Equal<Card>([], actual)
+//        
+//[<Fact>]
+//let ``Add to tableau, can increment by one`` () =    
+//    let ace = { Suit = Spade; Face = Face.Ace }
+//    let two = { Suit = Spade; Face = Face.Two }
+//    let next = 
+//        Tableau.New() 
+//        |> Tableau.add ace
+//        |> Tableau.add two
+//
+//    let actual = next.Spade.Cards.Head
+//
+//    Assert.Equal<Card>(two, actual)
+//
+//[<Fact>]
+//let ``Add to tableau, cannot increment by more than one`` () =    
+//    let ace = { Suit = Spade; Face = Face.Ace }
+//    let three = { Suit = Spade; Face = Face.Three }
+//    let next = 
+//        Tableau.New()
+//        |> Tableau.add ace
+//        |> Tableau.add three
+//
+//    let actual = next.Spade.Cards.Head
+//
+//    Assert.Equal<Card>(ace, actual)
