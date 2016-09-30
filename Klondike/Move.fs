@@ -19,10 +19,10 @@ module Move =
                 let to' = set.Foundations |> Foundations.add x
                 let from' = 
                     if to' |> Foundations.has x 
-                        then xs 
+                        then xs
                         else set.Discard
-
                 { From = from'; To = to' }
+
         { set with Discard = transfer.From; Foundations = transfer.To }
 
     let fromDiscardToTableau set =

@@ -39,7 +39,23 @@ let ``Move from discard to foundation, remains same if discard is empty`` () =
     Assert.Equal<Card>(ace, set.Foundations.Spade.Cards.Head)
 
 [<Fact>]
-let ``Move from discard to foundation, transfers head`` () =
+let ``Move from discard to foundation, remains same if unsuccessful`` () =
+    // this can't be added because a foundation must start with Ace
+    let disallowed = { Suit = Spade; Face = Face.Two }
+    let set =
+        {
+            Discard = []; 
+            Foundations = Foundations.New() |> Foundations.add disallowed
+            Stock = [];
+            Tableau = [] 
+        }
+        |> Move.fromDiscardToFoundation
+
+    Assert.Equal<Card list>([], set.Discard)
+    Assert.Equal<Card list>([], set.Foundations.Spade.Cards)
+
+[<Fact>]
+let ``Move from discard to foundation, transfers head if successful`` () =
     let ace = { Suit = Spade; Face = Face.Ace }
     let set =
         {
