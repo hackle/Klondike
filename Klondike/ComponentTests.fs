@@ -99,37 +99,3 @@ let ``Add to tableau, can add if decrement face with different color`` () =
         |> TableauPile.add blackQueen
         
     Assert.Equal<Card>(next.Value, [ blackQueen; redKing ])
-//[<Fact>]
-//let ``Add to tableau, if tableau is empty then none-Ace is not allowed`` () =    
-//    let card = { Suit = Spade; Face = Face.Two }
-//    let next = Tableau.New() |> Tableau.add card
-//
-//    let actual = next.Spade.Cards
-//
-//    Assert.Equal<Card>([], actual)
-//        
-//[<Fact>]
-//let ``Add to tableau, can increment by one`` () =    
-//    let ace = { Suit = Spade; Face = Face.Ace }
-//    let two = { Suit = Spade; Face = Face.Two }
-//    let next = 
-//        Tableau.New() 
-//        |> Tableau.add ace
-//        |> Tableau.add two
-//
-//    let actual = next.Spade.Cards.Head
-//
-//    Assert.Equal<Card>(two, actual)
-//
-//[<Fact>]
-//let ``Add to tableau, cannot increment by more than one`` () =    
-//    let ace = { Suit = Spade; Face = Face.Ace }
-//    let three = { Suit = Spade; Face = Face.Three }
-//    let next = 
-//        Tableau.New()
-//        |> Tableau.add ace
-//        |> Tableau.add three
-//
-//    let actual = next.Spade.Cards.Head
-//
-//    Assert.Equal<Card>(ace, actual)

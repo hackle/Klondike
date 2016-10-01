@@ -40,18 +40,23 @@ module Move =
                 { From = from'; To = to' }
         { set with Tableau = transfer.From; Foundations = transfer.To }
 
-    let fromDiscardToTableau set =
+    let fromDiscardToTableau pileIdx set =
         let transfer =
             match set.Discard with
-            | [] -> { From = set.Discard; To = set.Foundations }
+            | [] -> { From = set.Discard; To = set.Tableau }
             | x::xs ->
-                let to' = set.Foundations |> Foundations.add x
+                let pile = set.Tableau.[pileIdx]
+                let pile' = 
+                    pile 
+                    |> TableauPile.add x
+                let to' = List.replace pile pile' set.Tableau
                 let from' = 
-                    if set.Foundations |> Foundations.has x
+                    if pile'.Value |> List.contains x
                         then xs
                         else set.Discard
                 { From = from'; To = to' }
-        { set with Discard = transfer.From; Foundations = transfer.To }
+
+        { set with Discard = transfer.From; Tableau = transfer.To }
 
     let fromTableauToTableau pileIdx1 pileIdx2 set =
         ()

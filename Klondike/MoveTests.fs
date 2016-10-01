@@ -119,10 +119,12 @@ let ``Move from tableau to foundation, transfers head if successful`` () =
     Assert.True(set.Tableau.[0].Value.IsEmpty)
     Assert.Equal<Card>(ace, set.Foundations.Spade.Cards.Head)
 
+// from discard to tableau
+
 [<Fact>]
 let ``Move from discard to tableau, remain unchanged if discard is empty`` () =
-    let ace = { Suit = Spade; Face = Face.Ace }
-    let pile = TableauPile [ ace ]
+    let king = { Suit = Spade; Face = Face.King }
+    let pile = TableauPile [ king ]
     let original = 
         {
             Discard = []; 
@@ -132,24 +134,44 @@ let ``Move from discard to tableau, remain unchanged if discard is empty`` () =
         }
     let result = 
         original
-        |> Move.fromDiscardToTableau
+        |> Move.fromDiscardToTableau 0
 
     Assert.Equal(original, result)
 
-//[<Fact>]
-//let ``Move from discard to tableau, remain unchanged if unsuccessful`` () =
-//    let ace = { Suit = Spade; Face = Face.Ace }
-//    let three = { Suit = 
-//    let pile = TableauPile [ ace ]
-//    let original = 
-//        {
-//            Discard = []; 
-//            Foundations = Foundations.New()
-//            Stock = [];
-//            Tableau = [ pile ] 
-//        }
-//    let result = 
-//        original
-//        |> Move.fromDiscardToTableau
-//
-//    Assert.Equal(original, result)  
+[<Fact>]
+let ``Move from discard to tableau, remain unchanged if unsuccessful`` () =
+    let king = { Suit = Spade; Face = Face.King }
+    // this can't be added because they are of the same suit
+    let queen = { Suit = Spade; Face = Face.Queen }
+    let pile = TableauPile [ king ]
+    let original = 
+        {
+            Discard = [ queen ]; 
+            Foundations = Foundations.New()
+            Stock = [];
+            Tableau = [ pile ] 
+        }
+    let result = 
+        original
+        |> Move.fromDiscardToTableau 0
+
+    Assert.Equal(original, result)
+
+[<Fact>]
+let ``Move from discard to tableau, transfers card across`` () =
+    let king = { Suit = Spade; Face = Face.King }
+    let queen = { Suit = Diamond; Face = Face.Queen }
+    let pile = TableauPile [ king ]
+    let original = 
+        {
+            Discard = [ queen ]; 
+            Foundations = Foundations.New()
+            Stock = [];
+            Tableau = [ pile ] 
+        }
+    let result = 
+        original
+        |> Move.fromDiscardToTableau 0
+
+    Assert.Equal<Card list>([ queen; king ], result.Tableau.[0].Value)
+    Assert.True(result.Discard.IsEmpty)
