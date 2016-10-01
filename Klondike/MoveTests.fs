@@ -194,3 +194,43 @@ let ``Move from tableau to tableau, remain unchanged if tableau1 is empty`` () =
     let actual = original |> Move.fromTableauToTableau 0 1
 
     Assert.Equal<Set>(original, actual)
+
+[<Fact>]
+let ``Move from tableau to tableau, remain unchanged if unsuccessful`` () =
+    let king = { Suit = Spade; Face = Face.King }
+    // this won't work
+    let queen = { Suit = Spade; Face = Face.Queen }
+    let pile1 = TableauPile [ queen ]
+    let pile2 = TableauPile [ king ]
+
+    let original = 
+        {
+            Discard = []; 
+            Foundations = Foundations.New()
+            Stock = [];
+            Tableau = [ pile1; pile2 ] 
+        }
+
+    let actual = original |> Move.fromTableauToTableau 0 1
+
+    Assert.Equal<Set>(original, actual)
+
+[<Fact>]
+let ``Move from tableau to tableau, transfers card across`` () =
+    let king = { Suit = Spade; Face = Face.King }
+    let queen = { Suit = Heart; Face = Face.Queen }
+    let pile1 = TableauPile [ queen ]
+    let pile2 = TableauPile [ king ]
+
+    let original = 
+        {
+            Discard = []; 
+            Foundations = Foundations.New()
+            Stock = [];
+            Tableau = [ pile1; pile2 ] 
+        }
+
+    let actual = original |> Move.fromTableauToTableau 0 1
+
+    Assert.Equal<Card list>([ queen; king ], actual.Tableau.[1].Value)
+    Assert.True(actual.Tableau.[0].Value.IsEmpty)
