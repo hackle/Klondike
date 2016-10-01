@@ -124,6 +124,37 @@ module Components =
             match canAdd with
             | false -> pile
             | true -> TableauPile (card::pile.Value)
+
+        static member collectible (pile:TableauPile) =
+            let folder carry c =
+                let (idx_last, cards) = carry
+                let (idx_current, card) = c
+
+                if idx_current <> idx_last + 1
+                then carry
+                else
+                    match cards with
+                    | [] -> idx_current, [ card ]
+                    | x::xs ->
+                        let nextFace = (int x.Face) + 1
+                        let nextColor = 
+                            match x |> Card.color with
+                            | Red -> Black
+                            | Black -> Red
+                        if int card.Face = nextFace && card |> Card.color = nextColor
+                        then idx_current, card::cards
+                        else carry
+
+            let connected =
+                pile.Value
+                |> List.indexed
+                |> List.fold folder (-1, [])
+
+            let (idx, cards) = connected
+            cards
+
+        static member connectible (card: Card) pile =
+            ()
             
     type Set = { 
         Tableau: TableauPile list;
