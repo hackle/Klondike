@@ -234,3 +234,27 @@ let ``Move from tableau to tableau, transfers card across`` () =
 
     Assert.Equal<Card list>([ queen; king ], actual.Tableau.[1].Value)
     Assert.True(actual.Tableau.[0].Value.IsEmpty)
+
+[<Fact>]
+let ``Move from tableau to tableau, transfers valid segment of cards across`` () =
+    let king = { Suit = Spade; Face = Face.King }
+    let ten = { Suit = Heart; Face = Face.Ten };
+    let jack = { Suit = Spade; Face = Face.Jack };
+    let queen = { Suit = Heart; Face = Face.Queen }
+    // this will be left behind
+    let two = { Suit = Heart; Face = Face.Two }
+    let pile1 = TableauPile [ ten; jack; queen; two ]
+    let pile2 = TableauPile [ king ]
+
+    let original = 
+        {
+            Discard = []; 
+            Foundations = Foundations.New()
+            Stock = [];
+            Tableau = [ pile1; pile2 ] 
+        }
+
+    let actual = original |> Move.fromTableauToTableau 0 1
+
+    Assert.Equal<Card list>([ ten; jack; queen; king ], actual.Tableau.[1].Value)
+    Assert.Equal<Card list>([ two ], actual.Tableau.[0].Value)
