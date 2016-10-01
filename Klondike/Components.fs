@@ -99,33 +99,7 @@ module Components =
             let (TableauPile cards) = this
             cards
 
-        static member add (card: Card) (pile: TableauPile) =
-            let currentMaxValue = 
-                if pile.Value.IsEmpty 
-                then
-                    EnumHelper.allValues<Face>()
-                    |> Seq.max
-                    |> int
-                    |> (+) 1
-                else pile.Value.Head.Face |> int
-            let faceValueIsDecrementBy1 = (int card.Face) = currentMaxValue - 1
-
-            let nextColor =
-                if pile.Value.IsEmpty
-                then card |> Card.color
-                else 
-                    match pile.Value.Head |> Card.color with
-                    | Red -> Black
-                    | Black -> Red
-            let colorMatches = nextColor = (card |> Card.color)
-            
-            let canAdd = faceValueIsDecrementBy1 && colorMatches
-
-            match canAdd with
-            | false -> pile
-            | true -> TableauPile (card::pile.Value)
-
-        static member collectible (pile:TableauPile) =
+        static member ordered (pile:TableauPile) =
             let folder carry c =
                 let (idx_last, cards) = carry
                 let (idx_current, card) = c
@@ -151,11 +125,8 @@ module Components =
                 |> List.fold folder (-1, [])
 
             let (idx, cards) = connected
-            cards
+            cards |> List.rev
 
-        static member connectible (card: Card) pile =
-            ()
-            
     type Set = { 
         Tableau: TableauPile list;
         Stock: Card list;

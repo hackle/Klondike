@@ -251,7 +251,7 @@ let ``Move from tableau to tableau, transfers valid segment of cards across`` ()
             Discard = []; 
             Foundations = Foundations.New()
             Stock = [];
-            Tableau = [ pile1; pile2 ] 
+            Tableau = [ pile1; pile2 ]
         }
 
     let actual = original |> Move.fromTableauToTableau 0 1

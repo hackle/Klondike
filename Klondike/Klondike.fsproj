@@ -58,7 +58,7 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Extensions.fs" />
+    <Compile Include="Utils.fs" />
     <Compile Include="Components.fs" />
     <Compile Include="ComponentTests.fs" />
     <Compile Include="Play.fs" />

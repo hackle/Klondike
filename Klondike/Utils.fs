@@ -1,5 +1,7 @@
 ﻿namespace Klondike
 
+type Transfer<'s, 'f> = { From: 's; To: 'f }
+
 module ListExtensions =
     type List<'T> with
     static member shuffle list =

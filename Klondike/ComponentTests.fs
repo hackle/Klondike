@@ -49,75 +49,59 @@ let ``Add to foundations, cannot increment by more than one`` () =
 
 // Add to tableau pile
 
-[<Fact>]
-let ``Add to tableau, if pile is empty then King is allowed`` () =
-    let card = { Suit = Spade; Face = Face.King }
-    let next = 
-        (TableauPile []) |> TableauPile.add card
-
-    let actual = next.Value |> List.head
-
-    Assert.Equal<Card>(card, actual)
-
-[<Fact>]
-let ``Add to tableau, if pile is empty then non-King is not allowed`` () =
-    let card = { Suit = Spade; Face = Face.Queen }
-    let next = 
-        (TableauPile []) |> TableauPile.add card
-        
-    Assert.Equal<Card>(next.Value, [])
-    
-[<Fact>]
-let ``Add to tableau, can add if decrement face and alternate color`` () =
-    let blackKing = { Suit = Heart; Face = Face.King }
-    let redQueen = { Suit = Spade; Face = Face.Queen }
-    let next = 
-        (TableauPile []) 
-        |> TableauPile.add blackKing
-        |> TableauPile.add redQueen
-        
-    Assert.Equal<Card>(next.Value, [ redQueen; blackKing ])
-    
-[<Fact>]
-let ``Add to tableau, can not add if decrement face but with same color`` () =
-    let redKing = { Suit = Heart; Face = Face.King }
-    let redQueen = { Suit = Diamond; Face = Face.Queen }
-    let next = 
-        (TableauPile []) 
-        |> TableauPile.add redKing
-        |> TableauPile.add redQueen
-        
-    Assert.Equal<Card>(next.Value, [ redKing ])
-
-[<Fact>]
-let ``Add to tableau, can add if decrement face with different color`` () =
-    let redKing = { Suit = Heart; Face = Face.King }
-    let blackQueen = { Suit = Club; Face = Face.Queen }
-    let next = 
-        (TableauPile []) 
-        |> TableauPile.add redKing
-        |> TableauPile.add blackQueen
-        
-    Assert.Equal<Card>(next.Value, [ blackQueen; redKing ])
-    
-[<Fact>]
-let ``TableauPile.collectible discovers valid segment`` () =    
-    let ten = { Suit = Heart; Face = Face.Ten };
-    let jack = { Suit = Spade; Face = Face.Jack };
-    let queen = { Suit = Heart; Face = Face.Queen }
-    // this will be left behind
-    let two = { Suit = Heart; Face = Face.Two }
-
-    let pile = TableauPile [ ten; jack; queen; two ]
-
-    let expected = [ queen; jack; ten ]
-
-    let actual = pile |> TableauPile.collectible
-
-    Assert.Equal<Card list>(actual, expected)
+//[<Fact>]
+//let ``Add to tableau, if pile is empty then King is allowed`` () =
+//    let card = { Suit = Spade; Face = Face.King }
+//    let next = 
+//        (TableauPile []) |> TableauPile.add card
+//
+//    let actual = next.Value |> List.head
+//
+//    Assert.Equal<Card>(card, actual)
 //
 //[<Fact>]
-//let ``TableauPile.connectible discovers valid segment for movement`` () =    
+//let ``Add to tableau, if pile is empty then non-King is not allowed`` () =
+//    let card = { Suit = Spade; Face = Face.Queen }
+//    let next = 
+//        (TableauPile []) |> TableauPile.add card
+//        
+//    Assert.Equal<Card>(next.Value, [])
+//    
+//[<Fact>]
+//let ``Add to tableau, can add if decrement face and alternate color`` () =
+//    let blackKing = { Suit = Heart; Face = Face.King }
+//    let redQueen = { Suit = Spade; Face = Face.Queen }
+//    let next = 
+//        (TableauPile []) 
+//        |> TableauPile.add blackKing
+//        |> TableauPile.add redQueen
+//        
+//    Assert.Equal<Card>(next.Value, [ redQueen; blackKing ])
+//    
+//[<Fact>]
+//let ``Add to tableau, can not add if decrement face but with same color`` () =
+//    let redKing = { Suit = Heart; Face = Face.King }
+//    let redQueen = { Suit = Diamond; Face = Face.Queen }
+//    let next = 
+//        (TableauPile []) 
+//        |> TableauPile.add redKing
+//        |> TableauPile.add redQueen
+//        
+//    Assert.Equal<Card>(next.Value, [ redKing ])
+//
+//[<Fact>]
+//let ``Add to tableau, can add if decrement face with different color`` () =
+//    let redKing = { Suit = Heart; Face = Face.King }
+//    let blackQueen = { Suit = Club; Face = Face.Queen }
+//    let next = 
+//        (TableauPile []) 
+//        |> TableauPile.add redKing
+//        |> TableauPile.add blackQueen
+//        
+//    Assert.Equal<Card>(next.Value, [ blackQueen; redKing ])
+//    
+//[<Fact>]
+//let ``TableauPile.ordered discovers valid segment`` () =    
 //    let ten = { Suit = Heart; Face = Face.Ten };
 //    let jack = { Suit = Spade; Face = Face.Jack };
 //    let queen = { Suit = Heart; Face = Face.Queen }
@@ -126,10 +110,24 @@ let ``TableauPile.collectible discovers valid segment`` () =
 //
 //    let pile = TableauPile [ ten; jack; queen; two ]
 //
+//    let expected = [ ten; jack; queen ]
+//
+//    let actual = pile |> TableauPile.ordered
+//
+//    Assert.Equal<Card list>(actual, expected)
+//
+//[<Fact>]
+//let ``TableauPile.join joins cards to pile if applicable`` () =    
+//    let ten = { Suit = Heart; Face = Face.Ten };
+//    let jack = { Suit = Spade; Face = Face.Jack };
+//    let queen = { Suit = Heart; Face = Face.Queen }
+//
+//    let ordered = [ ten; jack; queen]
+//
 //    // this joins queen
-//    let joiningCard = { Suit = Spade; Face = Face.King }
-//    let expected = [ ten; jack; queen; joiningCard ]
+//    let joiningCard = { Suit = Diamond; Face = Face.Queen }
+//    let expected = [ ten; jack; joiningCard ]
 //
-//    let actual = pile |> TableauPile.connectible joiningCard
+//    let actual = TableauPile [ joiningCard ] |> TableauPile.join ordered
 //
-//    Assert.Equal<Card list>(actual.Value, expected)
+//    Assert.Equal<Card list>(expected, actual.Value)
