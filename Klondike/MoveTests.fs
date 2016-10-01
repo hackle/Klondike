@@ -175,3 +175,22 @@ let ``Move from discard to tableau, transfers card across`` () =
 
     Assert.Equal<Card list>([ queen; king ], result.Tableau.[0].Value)
     Assert.True(result.Discard.IsEmpty)
+
+// Move from tableau to tableau
+[<Fact>]
+let ``Move from tableau to tableau, remain unchanged if tableau1 is empty`` () =
+    let king = { Suit = Spade; Face = Face.King }
+    let pile1 = TableauPile [ ]
+    let pile2 = TableauPile [ king ]
+
+    let original = 
+        {
+            Discard = []; 
+            Foundations = Foundations.New()
+            Stock = [];
+            Tableau = [ pile1; pile2 ] 
+        }
+
+    let actual = original |> Move.fromTableauToTableau 0 1
+
+    Assert.Equal<Set>(original, actual)

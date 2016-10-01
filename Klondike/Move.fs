@@ -35,7 +35,7 @@ module Move =
                 let to' = set.Foundations |> Foundations.add x
                 let from' = 
                     if to' |> Foundations.has x 
-                        then set.Tableau |> List.replace pile (TableauPile xs)
+                        then set.Tableau |> List.replacei pileIdx (TableauPile xs)
                         else set.Tableau
                 { From = from'; To = to' }
         { set with Tableau = transfer.From; Foundations = transfer.To }
@@ -49,7 +49,7 @@ module Move =
                 let pile' = 
                     pile 
                     |> TableauPile.add x
-                let to' = List.replace pile pile' set.Tableau
+                let to' = List.replacei pileIdx pile' set.Tableau
                 let from' = 
                     if pile'.Value |> List.contains x
                         then xs
@@ -59,4 +59,21 @@ module Move =
         { set with Discard = transfer.From; Tableau = transfer.To }
 
     let fromTableauToTableau pileIdx1 pileIdx2 set =
-        ()
+        let original = { From = set.Tableau.[pileIdx1]; To = set.Tableau.[pileIdx2] }
+        let transfer =
+            match original.From.Value with
+            | [] -> original
+            | x::xs ->
+                let to' = original.To |> TableauPile.add x
+                let from' =
+                    if to'.Value |> List.contains x
+                    then TableauPile xs
+                    else original.From
+                { From = from'; To = to' }
+
+        let tableau' = 
+            set.Tableau
+            |> List.replacei pileIdx1 transfer.From
+            |> List.replacei pileIdx2 transfer.To
+
+        { set with Tableau = tableau' }

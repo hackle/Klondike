@@ -13,10 +13,10 @@ module ListExtensions =
                 permute' (remaining |> List.except [ item ]) (item::result)
         permute' list []
 
-    static member replace a b list =
+    static member replacei i b list =
         list
-        |> List.map
-            (fun e -> if e = a then b else e)
+        |> List.mapi
+            (fun idx e -> if idx = i then b else e)
 
 [<RequireQualifiedAccess>]
 module UnionCaseHelper = 
