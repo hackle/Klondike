@@ -84,7 +84,7 @@ module Move =
             { 
                 From = TableauPile (pile1.Value |> List.except ordered);
                 To = transfer.To
-            }    
+            }
 
     let fromDiscardToTableau pileIdx set =
         match set.Discard with
@@ -94,7 +94,7 @@ module Move =
             { set with 
                 Discard = if transfer.From.IsEmpty then xs else set.Discard; 
                 Tableau = set.Tableau |> List.replacei pileIdx transfer.To
-            }    
+            }
 
     let fromTableauToTableau pileIdx1 pileIdx2 set =
         let original = { From = set.Tableau.[pileIdx1]; To = set.Tableau.[pileIdx2] }
