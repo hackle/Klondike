@@ -72,9 +72,18 @@ let makePlay game command =
     |> List.append [ exitGame command |> Option.bind ]
     |> List.fold (fun carry current -> current carry) (Some game)
     
+let printCommands() =
+    printfn @"Commands: 
+        s2d (Stock to Discard) 
+        d2f (Discard to Foundations)
+        d2t{PileNumber} (Discard to Tableau Pile)
+        t{PileNumber1}2t{PileNumber2} (From one Tableau Pile to another)
+        t{PileNumber}2f (From Tableau Pile to Foundations)"
+    
 let rec play game =
     Console.Clear()
     prettyPrint game
+    printCommands()
 
     plays {
         let! g = takeCommand() |> makePlay game
