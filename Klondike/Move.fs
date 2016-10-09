@@ -82,7 +82,11 @@ module Move =
         then { From = pile1; To = pile2 }
         else 
             { 
-                From = TableauPile (pile1.Value |> List.except ordered);
+                From = pile1.Value 
+                        |> List.splitAt (ordered |> List.length) 
+                        |> snd
+                        |> List.append transfer.From
+                        |> TableauPile
                 To = transfer.To
             }
 
