@@ -48,19 +48,36 @@ let fromDiscardToFoundations command game =
         Move.fromDiscardToFoundation game
     | _ -> game
     
-let makePlay game raw =
+let exitGame command game =
+    match command with
+    | "exit" -> None
+    | _ -> Some game
+
+type PlaysBuilder() =
+    member this.Return(x) = Some x
+    member this.ReturnFrom(x) = x
+    member this.Bind(o, f) = Option.bind f o
+
+let plays = PlaysBuilder()
+
+let makePlay game command =
     [ fromStockToDiscard; 
         fromDiscardToTableau;
         fromTableauToTableau;
         fromDiscardToFoundations;
         fromTableauToFoundations
     ]
-    |> List.fold (fun carry current -> current raw carry) game
+    |> List.map (fun m -> m command)
+    |> List.map Option.map
+    |> List.append [ exitGame command |> Option.bind ]
+    |> List.fold (fun carry current -> current carry) (Some game)
     
 let rec play game =
     Console.Clear()
     prettyPrint game
 
-    takeCommand()
-    |> makePlay game
-    |> play
+    plays {
+        let! g = takeCommand() |> makePlay game
+        
+        return! play g
+    }
