@@ -52,10 +52,32 @@ let prettyPrint (game: Game) =
     printfn "Discarded"
     game.Discard |> printCards
 
+let takeCommand game =
+    printfn "Next move?"
+    Console.ReadLine()
+
+let fromStockToDiscard command game =
+    match command with
+    | "s2d" -> Move.fromStockToDiscard game
+    | _ -> game
+    
+let makePlay game raw =
+    [ fromStockToDiscard ]
+    |> List.fold (fun carry current -> current raw carry) game
+    
+let rec play game =
+    Console.Clear()
+    prettyPrint game
+
+    takeCommand()
+    |> makePlay game
+    |> play
+
 [<EntryPoint>]
 let main argv = 
     Play.deal()
-    |> prettyPrint
+    |> play
+    |> ignore
 
     Console.ReadKey() |> ignore
     0 // return an integer exit code
