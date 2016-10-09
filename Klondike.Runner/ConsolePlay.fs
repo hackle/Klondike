@@ -12,7 +12,7 @@ let takeCommand game =
 
 let fromStockToDiscard command game =
     match command with
-    | "s2d" -> Move.fromStockToDiscard game
+    | "s2d" | "" -> Move.fromStockToDiscard game
     | _ -> game
     
 type F2TMatcher = Regex< @"^d2t(?<PileNumber>\d)$" >
