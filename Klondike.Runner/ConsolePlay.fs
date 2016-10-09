@@ -5,6 +5,7 @@ open Components
 open System
 open FSharp.Text.RegexProvider
 open PrettyPrint
+open Maybe
 
 let takeCommand game =
     printfn "Next move?"
@@ -53,13 +54,6 @@ let exitGame command game =
     | "exit" -> None
     | _ -> Some game
 
-type PlaysBuilder() =
-    member this.Return(x) = Some x
-    member this.ReturnFrom(x) = x
-    member this.Bind(o, f) = Option.bind f o
-
-let plays = PlaysBuilder()
-
 let makePlay game command =
     [ fromStockToDiscard; 
         fromDiscardToTableau;
@@ -85,7 +79,7 @@ let rec play game =
     prettyPrint game
     printCommands()
 
-    plays {
+    maybe {
         let! g = takeCommand() |> makePlay game
         
         return! play g

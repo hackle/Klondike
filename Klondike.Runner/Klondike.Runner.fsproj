@@ -55,8 +55,10 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Maybe.fs" />
     <Compile Include="PrettyPrint.fs" />
     <Compile Include="ConsolePlay.fs" />
+    <Compile Include="AutoPlay.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />

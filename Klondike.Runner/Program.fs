@@ -6,11 +6,12 @@ open Components
 open System
 open FSharp.Text.RegexProvider
 open ConsolePlay
+open AutoPlay
 
 [<EntryPoint>]
 let main argv = 
     Play.deal()
-    |> play
+    |> autoplay
     |> ignore
 
     Console.ReadKey() |> ignore
