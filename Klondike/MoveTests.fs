@@ -193,7 +193,7 @@ let ``Move from tableau to tableau, remain unchanged if tableau1 is empty`` () =
 
     let actual = original |> Move.fromTableauToTableau 0 1
 
-    Assert.Equal<Set>(original, actual)
+    Assert.Equal<Game>(original, actual)
 
 [<Fact>]
 let ``Move from tableau to tableau, remain unchanged if unsuccessful`` () =
@@ -213,7 +213,7 @@ let ``Move from tableau to tableau, remain unchanged if unsuccessful`` () =
 
     let actual = original |> Move.fromTableauToTableau 0 1
 
-    Assert.Equal<Set>(original, actual)
+    Assert.Equal<Game>(original, actual)
 
 [<Fact>]
 let ``Move from tableau to tableau, transfers card across`` () =

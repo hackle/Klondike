@@ -127,7 +127,7 @@ module Components =
             let (idx, cards) = connected
             cards |> List.rev
 
-    type Set = { 
+    type Game = { 
         Tableau: TableauPile list;
         Stock: Card list;
         Discard: Card list;
